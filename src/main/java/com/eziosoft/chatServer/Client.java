@@ -101,8 +101,17 @@ public class Client {
                                 break;
                             }
                         }
-                        // make a new user object
-                        User dank = gson.fromJson(get, User.class);
+                        // decrypt data & make a new user object
+                        User dank = new User("h", "h", "h");
+                        try {
+                            Cipher cipher = Cipher.getInstance("RSA");
+                            cipher.init(Cipher.DECRYPT_MODE, KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(publickey)));
+                            shit = new String(cipher.doFinal(Base64.getDecoder().decode(get)));
+                            dank = gson.fromJson(shit, User.class);
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            System.exit(-2);
+                        }
                         // this user object is awful tho, we need to hash the password first
                         // to do this, first we need a SALT
                         String salt = BCrypt.gensalt();

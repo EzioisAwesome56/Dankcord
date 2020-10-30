@@ -102,7 +102,10 @@ public class testClient {
                             }
                         }
                         User dank = new User(name, pass1, "gamer juice");
-                        out.writeUTF(gson.toJson(dank));
+                        // encrypt data with public key from eariler
+                        Cipher cipher = Cipher.getInstance("RSA");
+                        cipher.init(Cipher.ENCRYPT_MODE, KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(privatekey)));
+                        out.writeUTF(Base64.getEncoder().encodeToString(cipher.doFinal(gson.toJson(dank).getBytes())));
                     } else if (h.equals("KEY")){
                         // we are about to be sent our public key
                         // tell the server we are ready for it
