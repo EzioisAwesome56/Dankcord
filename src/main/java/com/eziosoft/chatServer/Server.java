@@ -1,5 +1,7 @@
 package com.eziosoft.chatServer;
 
+import com.eziosoft.chatServer.webAuth.webServer;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -20,6 +22,14 @@ public class Server {
         System.out.println("Dankcord Server version 0.1 Alpha is starting up...");
         // init the database
         Database.databaseInit();
+
+        // boot web server
+        webServer web = new webServer(6970);
+        try {
+            web.startWeb();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
 
         // init the server
         ServerSocket ss = new ServerSocket(6969);
