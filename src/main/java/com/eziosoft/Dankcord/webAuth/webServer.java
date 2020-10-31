@@ -1,12 +1,15 @@
 package com.eziosoft.Dankcord.webAuth;
 
+import com.eziosoft.Dankcord.Server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +25,9 @@ public class webServer {
         System.out.println("Dankcord whweb interface is now starting...");
         // init the http server
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+        // create "contexts" aka pages
         server.createContext("/auth", new authPage());
+        server.createContext("/reg", new registerPage());
         server.setExecutor(null);
         server.start();
         System.out.println("Web server has finished loading!");
@@ -58,7 +63,14 @@ public class webServer {
     static class registerPage implements HttpHandler{
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            // mountian dew gamer fuel
+            // first read the reg.html file as a byte[]
+            byte[] h = IOUtils.toByteArray(registerPage.class.getResource("/reg.html"));
+            // handle the client next
+            exchange.getResponseHeaders().add("Content-Type", "text/html");
+            exchange.sendResponseHeaders(200, h.length);
+            OutputStream out = exchange.getResponseBody();
+            out.write(h);
+            out.close();
         }
     }
 }
