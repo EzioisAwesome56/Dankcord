@@ -1,17 +1,14 @@
-package com.eziosoft.chatServer;
+package com.eziosoft.Dankcord;
 
 
 import com.google.gson.Gson;
 import org.mindrot.jbcrypt.BCrypt;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
-import javax.xml.crypto.Data;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketException;
 import java.security.*;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;

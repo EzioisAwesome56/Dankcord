@@ -48,7 +48,7 @@
                     <!-- MainClass in mainfest make a executable jar -->
                     <archive>
                         <manifest>
-                            <mainClass>com.eziosoft.chatServer.basicClient.testClient</mainClass>
+                            <mainClass>com.eziosoft.Dankcord.basicClient.testClient</mainClass>
                         </manifest>
                     </archive>
 

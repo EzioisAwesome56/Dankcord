@@ -1,6 +1,4 @@
-package com.eziosoft.chatServer;
-
-import com.google.gson.Gson;
+package com.eziosoft.Dankcord;
 
 public class Message {
 

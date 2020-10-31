@@ -1,11 +1,8 @@
-package com.eziosoft.chatServer;
+package com.eziosoft.Dankcord;
 
 import com.google.gson.Gson;
 import com.rethinkdb.RethinkDB;
-import com.rethinkdb.gen.ast.ToJsonString;
-import com.rethinkdb.gen.exc.ReqlRuntimeError;
 import com.rethinkdb.net.Connection;
-import com.rethinkdb.net.Result;
 
 public class Database {
 

@@ -1,4 +1,4 @@
-package com.eziosoft.chatServer;
+package com.eziosoft.Dankcord;
 
 public class User {
 

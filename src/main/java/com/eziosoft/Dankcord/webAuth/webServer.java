@@ -1,4 +1,4 @@
-package com.eziosoft.chatServer.webAuth;
+package com.eziosoft.Dankcord.webAuth;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -17,7 +17,7 @@ public class webServer {
     }
 
     public void startWeb() throws Exception{
-        System.out.println("Dankcord web interface is now starting...");
+        System.out.println("Dankcord whweb interface is now starting...");
         // init the http server
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         server.createContext("/test", new test());

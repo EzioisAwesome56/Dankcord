@@ -1,8 +1,8 @@
-package com.eziosoft.chatServer.basicClient;
+package com.eziosoft.Dankcord.basicClient;
 
-import com.eziosoft.chatServer.Message;
-import com.eziosoft.chatServer.User;
-import com.eziosoft.chatServer.Utils;
+import com.eziosoft.Dankcord.Message;
+import com.eziosoft.Dankcord.User;
+import com.eziosoft.Dankcord.Utils;
 import com.google.gson.Gson;
 
 import javax.crypto.Cipher;
@@ -11,9 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.security.KeyFactory;
-import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Base64;
 import java.util.Scanner;
