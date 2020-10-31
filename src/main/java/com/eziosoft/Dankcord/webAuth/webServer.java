@@ -1,5 +1,6 @@
 package com.eziosoft.Dankcord.webAuth;
 
+import com.eziosoft.Dankcord.Database;
 import com.eziosoft.Dankcord.Server;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -7,6 +8,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -28,6 +30,7 @@ public class webServer {
         // create "contexts" aka pages
         server.createContext("/auth", new authPage());
         server.createContext("/reg", new registerPage());
+        server.createContext("/submit", new registerProcessor());
         server.setExecutor(null);
         server.start();
         System.out.println("Web server has finished loading!");
@@ -45,6 +48,36 @@ public class webServer {
             }
         }
         return result;
+    }
+
+    static class registerProcessor implements HttpHandler{
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            // get post data from the request body
+            StringBuilder sb = new StringBuilder();
+            InputStream is = exchange.getRequestBody();
+            int i;
+            while ((i = is.read()) != -1){
+                sb.append((char) i);
+            }
+            // get the post data
+            System.out.println(queryToMap(exchange.getRequestURI().getQuery()).get("username"));
+            // check if the username is taken
+            //System.out.println(h);
+            boolean piss = Database.checkForUser("tim");
+            if (piss){
+                System.out.println("in if block");
+                String error = "Username already taken!";
+                exchange.sendResponseHeaders(200, error.getBytes().length);
+                exchange.getResponseBody().write(error.getBytes());
+                exchange.getResponseBody().close();
+            }
+
+            OutputStream os = exchange.getResponseBody();
+            exchange.sendResponseHeaders(200, sb.toString().getBytes().length);
+            os.write(sb.toString().getBytes());
+            os.close();
+        }
     }
 
 
