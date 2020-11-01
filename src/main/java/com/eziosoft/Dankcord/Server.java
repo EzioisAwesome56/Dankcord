@@ -15,6 +15,8 @@ public class Server {
 
     private static Map<Integer, Client> clients = new HashMap<>();
     private static Random random = new Random();
+    // for generating auth token
+    public static String authsalt = "gamerfuel";
 
     public static void main(String[] args) throws IOException {
         System.out.println("Dankcord Server version 0.1 Alpha is starting up...");
