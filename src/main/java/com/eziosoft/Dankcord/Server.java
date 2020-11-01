@@ -1,6 +1,7 @@
 package com.eziosoft.Dankcord;
 
 import com.eziosoft.Dankcord.webAuth.webServer;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -16,10 +17,13 @@ public class Server {
     private static Map<Integer, Client> clients = new HashMap<>();
     private static Random random = new Random();
     // for generating auth token
-    public static String authsalt = "gamerfuel";
+    public static String authsalt;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Dankcord Server version 0.1 Alpha is starting up...");
+        // generate salt for making auth tokens
+        authsalt = BCrypt.gensalt();
+        System.out.println("Auth token salt generated");
         // init the database
         Database.databaseInit();
 

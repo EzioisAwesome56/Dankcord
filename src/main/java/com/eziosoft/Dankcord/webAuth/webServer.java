@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -121,9 +122,10 @@ public class webServer {
                 exchange.getResponseBody().close();
                 return;
             }
-            // TODO: generate auth tokens for later use
-            exchange.sendResponseHeaders(200, "pretend this is an auth token".getBytes().length);
-            exchange.getResponseBody().write("pretend this is an auth token".getBytes());
+            // generate an auth token via bcrypt and then encode it with base64
+            String token = BCrypt.hashpw(dank.getUsername(), Server.authsalt);
+            exchange.sendResponseHeaders(200, token.getBytes().length);
+            exchange.getResponseBody().write(token.getBytes());
             exchange.getResponseBody().close();
         }
     }
