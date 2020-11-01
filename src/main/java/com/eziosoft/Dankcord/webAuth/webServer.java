@@ -2,10 +2,12 @@ package com.eziosoft.Dankcord.webAuth;
 
 import com.eziosoft.Dankcord.Database;
 import com.eziosoft.Dankcord.Server;
+import com.eziosoft.Dankcord.User;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.IOUtils;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -56,19 +58,13 @@ public class webServer {
         public void handle(HttpExchange exchange) throws IOException {
             // get post data from the request body
             Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody(), Charset.defaultCharset()));
-            // check if the username contains spaces
-            if (data.get("username").matches("\\S+")){
-                String error = "Username cannot contain spaces!";
-                exchange.sendResponseHeaders(200, error.getBytes().length);
-                exchange.getResponseBody().write(error.getBytes());
-                exchange.getResponseBody().close();
-            }
             // check if the username is taken
             if (Database.checkForUser(data.get("username"))){
                 String error = "Username already taken!";
                 exchange.sendResponseHeaders(200, error.getBytes().length);
                 exchange.getResponseBody().write(error.getBytes());
                 exchange.getResponseBody().close();
+                return;
             }
             // check if the 2 entered passwords match
             if (!data.get("passone").equals(data.get("passtwo"))){
@@ -76,11 +72,21 @@ public class webServer {
                 exchange.sendResponseHeaders(200, error.getBytes().length);
                 exchange.getResponseBody().write(error.getBytes());
                 exchange.getResponseBody().close();
+                return;
             }
-
+            // then we go through the process of making the new user account
+            // first off, generate the salt
+            String salt = BCrypt.gensalt();
+            // then generate the password hash
+            String hash = BCrypt.hashpw(data.get("passone"), salt);
+            // create a new user object
+            User dank = new User(data.get("username"), hash, salt);
+            // finally, save this new object into rethinkDB
+            Database.saveUser(dank);
+            // make the browser happy
             OutputStream os = exchange.getResponseBody();
-            exchange.sendResponseHeaders(200, "gamers".getBytes().length);
-            os.write("gamers".getBytes());
+            exchange.sendResponseHeaders(200, "Your account has been created!".getBytes().length);
+            os.write("Your account has been created!".getBytes());
             os.close();
         }
     }
