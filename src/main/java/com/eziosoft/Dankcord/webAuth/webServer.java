@@ -25,7 +25,7 @@ public class webServer {
     }
 
     public void startWeb() throws Exception{
-        System.out.println("Dankcord whweb interface is now starting...");
+        System.out.println("Dankcord web interface is now starting...");
         // init the http server
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
         // create "contexts" aka pages
@@ -56,11 +56,23 @@ public class webServer {
         public void handle(HttpExchange exchange) throws IOException {
             // get post data from the request body
             Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody(), Charset.defaultCharset()));
-            System.out.println(data.get("username"));
+            // check if the username contains spaces
+            if (data.get("username").matches("\\S+")){
+                String error = "Username cannot contain spaces!";
+                exchange.sendResponseHeaders(200, error.getBytes().length);
+                exchange.getResponseBody().write(error.getBytes());
+                exchange.getResponseBody().close();
+            }
             // check if the username is taken
-            //System.out.println(h);
             if (Database.checkForUser(data.get("username"))){
                 String error = "Username already taken!";
+                exchange.sendResponseHeaders(200, error.getBytes().length);
+                exchange.getResponseBody().write(error.getBytes());
+                exchange.getResponseBody().close();
+            }
+            // check if the 2 entered passwords match
+            if (!data.get("passone").equals(data.get("passtwo"))){
+                String error = "provided passwords do not match! please try again";
                 exchange.sendResponseHeaders(200, error.getBytes().length);
                 exchange.getResponseBody().write(error.getBytes());
                 exchange.getResponseBody().close();
