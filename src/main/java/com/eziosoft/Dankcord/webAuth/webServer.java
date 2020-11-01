@@ -54,19 +54,11 @@ public class webServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             // get post data from the request body
-            StringBuilder sb = new StringBuilder();
-            InputStream is = exchange.getRequestBody();
-            int i;
-            while ((i = is.read()) != -1){
-                sb.append((char) i);
-            }
-            // get the post data
-            System.out.println(queryToMap(exchange.getRequestURI().getQuery()).get("username"));
+            Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody()));
+            System.out.println(data.get("username"));
             // check if the username is taken
             //System.out.println(h);
-            boolean piss = Database.checkForUser("tim");
-            if (piss){
-                System.out.println("in if block");
+            if (Database.checkForUser(data.get("username"))){
                 String error = "Username already taken!";
                 exchange.sendResponseHeaders(200, error.getBytes().length);
                 exchange.getResponseBody().write(error.getBytes());
@@ -74,8 +66,8 @@ public class webServer {
             }
 
             OutputStream os = exchange.getResponseBody();
-            exchange.sendResponseHeaders(200, sb.toString().getBytes().length);
-            os.write(sb.toString().getBytes());
+            exchange.sendResponseHeaders(200, "gamers".getBytes().length);
+            os.write("gamers".getBytes());
             os.close();
         }
     }
