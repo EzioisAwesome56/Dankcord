@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ public class webServer {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             // get post data from the request body
-            Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody()));
+            Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody(), Charset.defaultCharset()));
             System.out.println(data.get("username"));
             // check if the username is taken
             //System.out.println(h);
