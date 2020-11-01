@@ -95,12 +95,36 @@ public class webServer {
     static class authPage implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
-            String text = queryToMap(exchange.getRequestURI().getQuery()).get("a");
-            byte[] h = text.getBytes();
-            exchange.sendResponseHeaders(200, h.length);
-            OutputStream out = exchange.getResponseBody();
-            out.write(h);
-            out.close();
+            // get the post data
+            Map<String, String> data = queryToMap(IOUtils.toString(exchange.getRequestBody(), Charset.defaultCharset()));
+            // check if the user exists
+            if (!Database.checkForUser(data.get("username"))){
+                // username does not exist
+                // inform client of this and disconnect them
+                String error = "account does not exist!";
+                exchange.sendResponseHeaders(200, error.getBytes().length);
+                exchange.getResponseBody().write(error.getBytes());
+                exchange.getResponseBody().close();
+                return;
+            }
+            // load user object
+            User dank = Database.loadUser(data.get("username"));
+            // hash the provided password
+            String hash = BCrypt.hashpw(data.get("password"), dank.getSalt());
+            // check if the passwords match
+            if (!dank.getPasshash().equals(hash)){
+                // passwords do not match
+                // gtfo
+                String error = "password invalid!";
+                exchange.sendResponseHeaders(200, error.getBytes().length);
+                exchange.getResponseBody().write(error.getBytes());
+                exchange.getResponseBody().close();
+                return;
+            }
+            // TODO: generate auth tokens for later use
+            exchange.sendResponseHeaders(200, "pretend this is an auth token".getBytes().length);
+            exchange.getResponseBody().write("pretend this is an auth token".getBytes());
+            exchange.getResponseBody().close();
         }
     }
 
