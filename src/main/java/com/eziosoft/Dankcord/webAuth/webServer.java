@@ -158,7 +158,6 @@ public class webServer {
             block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPublic().getEncoded()), dank.getUsername());
             // check if there is already an authblock for this user
             // and if there is, delete it
-            System.out.println(Database.checkForAuth(dank.getUsername()));
             if (Database.checkForAuth(dank.getUsername())){
                 Database.deleteAuthBlock(dank.getUsername());
             }
