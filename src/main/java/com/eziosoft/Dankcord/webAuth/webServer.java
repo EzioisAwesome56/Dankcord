@@ -3,6 +3,9 @@ package com.eziosoft.Dankcord.webAuth;
 import com.eziosoft.Dankcord.Database;
 import com.eziosoft.Dankcord.Server;
 import com.eziosoft.Dankcord.User;
+import com.eziosoft.Dankcord.authBlock;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -15,6 +18,10 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +29,8 @@ import java.util.Map;
 public class webServer {
 
     private int port;
+    private static SecureRandom sr = new SecureRandom();
+    private static Gson gson = new Gson();
 
     public webServer(int a){
         this.port = a;
@@ -122,11 +131,36 @@ public class webServer {
                 exchange.getResponseBody().close();
                 return;
             }
-            // generate an auth token via bcrypt and then encode it with base64
+            // generate an auth token via bcrypt
             String token = BCrypt.hashpw(dank.getUsername(), Server.authsalt);
-            exchange.sendResponseHeaders(200, token.getBytes().length);
-            exchange.getResponseBody().write(token.getBytes());
+            // generate asymetric keypair
+            KeyPair pair = null;
+            try{
+                KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+                kpg.initialize(2048, sr);
+                pair = kpg.generateKeyPair();
+            } catch (NoSuchAlgorithmException e){
+                System.out.println("How did this happen?");
+                exchange.sendResponseHeaders(200, "YOU SHOULD NOT BE SEEING THIS!".getBytes().length);
+                exchange.getResponseBody().write("YOU SHOULD NOT BE SEEING THIS!".getBytes().length);
+                exchange.getResponseBody().close();
+            }
+            // dump all this crap into a new authBlock
+            authBlock block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPrivate().getEncoded()), "you dont need this data!");
+            // encode authBlock to json
+            String json = gson.toJson(block);
+            // encode THAT into base64
+            String b64json = Base64.getEncoder().encodeToString(json.getBytes());
+            // send that to the client
+            exchange.sendResponseHeaders(200, b64json.getBytes().length);
+            exchange.getResponseBody().write(b64json.getBytes());
             exchange.getResponseBody().close();
+            // now that we dont have to worry about the client, we have to worry about the server!
+            // reuse old variables to make a new authBlock object
+            block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPublic().getEncoded()), dank.getUsername());
+            // save this to database for use by actual chat client
+            Database.saveAuthBlock(block);
+            // and thats all she wrote!
         }
     }
 

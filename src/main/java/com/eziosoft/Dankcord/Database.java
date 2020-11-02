@@ -47,4 +47,8 @@ public class Database {
         return gson.fromJson(r.table("users").get(name).toJson().run(thonk, String.class).first(), User.class);
     }
 
+    public static void saveAuthBlock(authBlock auth){
+        r.table("auth").insert(auth).run(thonk);
+    }
+
 }
