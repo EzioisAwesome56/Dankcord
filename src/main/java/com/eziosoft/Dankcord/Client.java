@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
@@ -23,6 +24,9 @@ public class Client {
     private SecureRandom sr = new SecureRandom();
     private int conid;
     private String name;
+    private Cipher encrypt;
+    private Cipher decrypt;
+
 
     public Client(Socket s, DataInputStream i, DataOutputStream o, int conid){
         this.s = s;
@@ -41,8 +45,22 @@ public class Client {
         Thread loop = new Thread(){
             public void run(){
                 try {
-                    // first we need to get the username from the client
-                    out.writeUTF("USER");
+                    // setup server side encrption first
+                    try {
+                        encrypt = Cipher.getInstance("RSA");
+                        encrypt.init(Cipher.ENCRYPT_MODE, Server.serverkeys.getPrivate());
+                        // quickly init the decryption cipher
+                        decrypt = Cipher.getInstance("RSA");
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
+                    // try sending the message to the client
+                    try{
+                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("USER".getBytes())));
+                    } catch (Exception e){
+                        System.out.println("Error while trying to encrypt message to client!");
+                        e.printStackTrace();
+                    }
                     name = in.readUTF();
                     // check if the account exists
                     if (!Database.checkForUser(name)){
@@ -59,6 +77,7 @@ public class Client {
                     // quickly load public key
                     try{
                         publickey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(block.getkeyb64())));
+                        decrypt.init(Cipher.DECRYPT_MODE, publickey);
                     } catch (Exception e){
                         // critical error, this should not happen
                         e.printStackTrace();
@@ -66,13 +85,15 @@ public class Client {
                         System.exit(-2);
                     }
                     // ask the client for its authentication token
-                    out.writeUTF("AUTH");
+                    try{
+                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("AUTH".getBytes())));
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
                     get = in.readUTF();
                     // decrypt this shit
                     try {
-                        Cipher cipher = Cipher.getInstance("RSA");
-                        cipher.init(Cipher.DECRYPT_MODE, publickey);
-                        shit = new String(cipher.doFinal(Base64.getDecoder().decode(get)));
+                        shit = new String(decrypt.doFinal(Base64.getDecoder().decode(get)));
                     } catch (Exception e){
                         e.printStackTrace();
                         System.out.println("HOW DID THIS HAPPEN?");
@@ -89,15 +110,17 @@ public class Client {
                         return;
                     }
                     // if we are here, it means the client checks out as legitimate
-                    out.writeUTF("OK");
+                    try{
+                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("OK".getBytes())));
+                    } catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                     // main loop
                     while (true){
                         get = in.readUTF();
                         try{
-                            Cipher cipher = Cipher.getInstance("RSA");
-                            cipher.init(Cipher.DECRYPT_MODE, publickey);
-                            shit = new String(cipher.doFinal(Base64.getDecoder().decode(get)));
+                            shit = new String(decrypt.doFinal(Base64.getDecoder().decode(get)));
                         } catch (Exception e){
                             e.printStackTrace();
                         }
@@ -129,8 +152,8 @@ public class Client {
 
     public void send(String content) {
         try {
-            out.writeUTF(content);
-        } catch (IOException e){
+            out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal(content.getBytes())));
+        } catch (Exception e){
             e.printStackTrace();
         }
     }
