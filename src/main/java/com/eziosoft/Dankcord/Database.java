@@ -24,7 +24,7 @@ public class Database {
             r.dbCreate("Dankcord").run(thonk);
             r.db("Dankcord").tableCreate("users").optArg("primary_key", "username").run(thonk);
             r.db("Dankcord").tableCreate("channels").optArg("primary_key", "name").run(thonk);
-            r.db("Dankcord").tableCreate("auth").optArg("primary_key", "token");
+            r.db("Dankcord").tableCreate("auth").optArg("primary_key", "token").run(thonk);
             System.out.println("Database created!");
         } else {
             System.out.println("Database already exists!");
