@@ -4,7 +4,6 @@ import com.eziosoft.Dankcord.Database;
 import com.eziosoft.Dankcord.Server;
 import com.eziosoft.Dankcord.User;
 import com.eziosoft.Dankcord.authBlock;
-import com.fasterxml.jackson.databind.ser.Serializers;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -13,10 +12,8 @@ import org.apache.commons.io.IOUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
