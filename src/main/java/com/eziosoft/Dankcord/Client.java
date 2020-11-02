@@ -25,6 +25,7 @@ public class Client {
     private static PublicKey publickey;
     private SecureRandom sr = new SecureRandom();
     private int conid;
+    private String name;
 
     public Client(Socket s, DataInputStream i, DataOutputStream o, int conid){
         this.s = s;
@@ -45,7 +46,7 @@ public class Client {
                 try {
                     // first we need to get the username from the client
                     out.writeUTF("USER");
-                    String name = in.readUTF();
+                    name = in.readUTF();
                     // check if the account exists
                     if (!Database.checkForUser(name)){
                         // account does not exist, disconnect client
@@ -103,10 +104,13 @@ public class Client {
                         } catch (Exception e){
                             e.printStackTrace();
                         }
-                        if (shit.equals("DC")){
+                        if (shit.equals("&DC")){
                             s.close();
                             System.out.println("Client has disconnected!");
                             break;
+                        } else if (shit.equals("&DELAUTH")){
+                            // Delete stored auth block for user
+                            Database.deleteAuthBlock(name);
                         } else {
                             // deal with messages
                             System.out.println("Message: "+ get);
