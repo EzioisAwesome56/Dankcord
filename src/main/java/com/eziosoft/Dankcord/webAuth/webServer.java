@@ -132,7 +132,7 @@ public class webServer {
                 return;
             }
             // generate an auth token via bcrypt
-            String token = BCrypt.hashpw(dank.getUsername(), Server.authsalt);
+            String token = BCrypt.hashpw(dank.getUsername(), BCrypt.gensalt());
             // generate asymetric keypair
             KeyPair pair = null;
             try{
