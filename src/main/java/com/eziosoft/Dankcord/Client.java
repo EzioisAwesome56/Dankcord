@@ -80,6 +80,7 @@ public class Client {
                     authBlock block = Database.loadAuthBlock(name);
                     // quickly load public key
                     try{
+                        System.out.println(block.getkeyb64());
                         publickey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(block.getkeyb64())));
                         decrypt.init(Cipher.DECRYPT_MODE, publickey);
                     } catch (Exception e){
@@ -119,6 +120,7 @@ public class Client {
                     } catch (Exception e){
                         e.printStackTrace();
                     }
+                    Database.deleteAuthBlock(name);
 
                     // main loop
                     while (true){
@@ -137,8 +139,8 @@ public class Client {
                             Database.deleteAuthBlock(name);
                         } else {
                             // deal with messages
-                            System.out.println("Message: "+ get);
-                            Server.sendAll(get);
+                            System.out.println("Message: "+ shit);
+                            Server.sendAll(shit);
                         }
                     }
                     in.close();
@@ -156,7 +158,8 @@ public class Client {
 
     public void send(String content) {
         try {
-            out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal(content.getBytes())));
+            // TODO: figure out why encrypting server -> client messages isnt working
+            out.writeUTF(content);
         } catch (Exception e){
             e.printStackTrace();
         }
