@@ -55,4 +55,12 @@ public class Database {
         return gson.fromJson(r.table("auth").get(username).toJson().run(thonk, String.class).first(), authBlock.class);
     }
 
+    public static void deleteAuthBlock(String username){
+        r.table("auth").filter(r.hashMap("username", username)).delete().run(thonk);
+    }
+
+    public static boolean checkForAuth(String username){
+        return r.table("auth").getAll(username).count().eq(1).run(thonk, boolean.class).first();
+    }
+
 }

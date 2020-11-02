@@ -11,6 +11,7 @@ import com.sun.net.httpserver.HttpServer;
 import org.apache.commons.io.IOUtils;
 import org.mindrot.jbcrypt.BCrypt;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -83,7 +84,7 @@ public class webServer {
             }
             // then we go through the process of making the new user account
             // first off, generate the salt
-            String salt = BCrypt.gensalt();
+            String salt = BCrypt.gensalt(10, sr);
             // then generate the password hash
             String hash = BCrypt.hashpw(data.get("passone"), salt);
             // create a new user object
@@ -155,6 +156,12 @@ public class webServer {
             // now that we dont have to worry about the client, we have to worry about the server!
             // reuse old variables to make a new authBlock object
             block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPublic().getEncoded()), dank.getUsername());
+            // check if there is already an authblock for this user
+            // and if there is, delete it
+            System.out.println(Database.checkForAuth(dank.getUsername()));
+            if (Database.checkForAuth(dank.getUsername())){
+                Database.deleteAuthBlock(dank.getUsername());
+            }
             // save this to database for use by actual chat client
             Database.saveAuthBlock(block);
             // and thats all she wrote!
