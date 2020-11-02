@@ -65,7 +65,11 @@ public class Client {
                     // check if the account exists
                     if (!Database.checkForUser(name)){
                         // account does not exist, disconnect client
-                        out.writeUTF("FAIL");
+                        try {
+                            out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("FAIL".getBytes())));
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
                         s.close();
                         out.close();
                         in.close();
