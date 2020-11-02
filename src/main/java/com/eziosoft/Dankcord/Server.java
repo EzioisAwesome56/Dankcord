@@ -1,13 +1,16 @@
 package com.eziosoft.Dankcord;
 
 import com.eziosoft.Dankcord.webAuth.webServer;
-import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -16,9 +19,23 @@ public class Server {
 
     private static Map<Integer, Client> clients = new HashMap<>();
     private static Random random = new Random();
+    public static KeyPair serverkeys;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Dankcord Server version 0.1 Alpha is starting up...");
+        // generate server's encryption keys
+        System.out.println("Generating server-side encryption keys...");
+        try{
+            KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA");
+            kpg.initialize(2048, new SecureRandom());
+            serverkeys = kpg.generateKeyPair();
+        } catch (NoSuchAlgorithmException e){
+            System.out.println("There has been an error while trying to generate server-side encryption keys.");
+            System.out.println("Dankcord will now exit. Please use the provided stack trace for help in debugging");
+            e.printStackTrace();
+            System.exit(-2);
+        }
+        System.out.println("Keys generated!");
         // init the database
         Database.databaseInit();
 

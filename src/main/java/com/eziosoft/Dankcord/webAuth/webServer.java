@@ -146,7 +146,7 @@ public class webServer {
                 exchange.getResponseBody().close();
             }
             // dump all this crap into a new authBlock
-            authBlock block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPrivate().getEncoded()), "you dont need this data!");
+            authBlock block = new authBlock(token, Base64.getEncoder().encodeToString(pair.getPrivate().getEncoded()), Base64.getEncoder().encodeToString(Server.serverkeys.getPublic().getEncoded()));
             // encode authBlock to json
             String json = gson.toJson(block);
             // encode THAT into base64
