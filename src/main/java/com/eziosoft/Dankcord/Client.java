@@ -80,7 +80,6 @@ public class Client {
                     authBlock block = Database.loadAuthBlock(name);
                     // quickly load public key
                     try{
-                        System.out.println(block.getkeyb64());
                         publickey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(block.getkeyb64())));
                         decrypt.init(Cipher.DECRYPT_MODE, publickey);
                     } catch (Exception e){
