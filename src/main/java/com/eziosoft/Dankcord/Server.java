@@ -22,7 +22,7 @@ public class Server {
     public static KeyPair serverkeys;
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Dankcord Server version 0.1 Alpha is starting up...");
+        System.out.println("Dankcord Server version 0.7 Alpha is starting up...");
         // generate server's encryption keys
         System.out.println("Generating server-side encryption keys...");
         try{
