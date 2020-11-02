@@ -51,4 +51,8 @@ public class Database {
         r.table("auth").insert(auth).run(thonk);
     }
 
+    public static authBlock loadAuthBlock(String username){
+        return gson.fromJson(r.table("auth").get(username).toJson().run(thonk, String.class).first(), authBlock.class);
+    }
+
 }
