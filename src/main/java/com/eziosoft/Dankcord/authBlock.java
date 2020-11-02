@@ -3,12 +3,12 @@ package com.eziosoft.Dankcord;
 public class authBlock {
 
     private String token;
-    private String privatekeyb64;
+    private String keyb64;
     private String username;
 
-    public authBlock(String token, String privatekeyb64, String username){
+    public authBlock(String token, String keyb64, String username){
         this.token = token;
-        this.privatekeyb64 = privatekeyb64;
+        this.keyb64 = keyb64;
         this.username = username;
     }
 
@@ -16,8 +16,8 @@ public class authBlock {
         return this.username;
     }
 
-    public String getPrivatekeyb64() {
-        return this.privatekeyb64;
+    public String getkeyb64() {
+        return this.keyb64;
     }
 
     public String getToken() {
