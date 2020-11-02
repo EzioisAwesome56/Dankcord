@@ -1,9 +1,6 @@
 package com.eziosoft.Dankcord;
 
-
-import com.fasterxml.jackson.databind.ser.std.NullSerializer;
 import com.google.gson.Gson;
-import org.mindrot.jbcrypt.BCrypt;
 
 import javax.crypto.Cipher;
 import java.io.DataInputStream;
