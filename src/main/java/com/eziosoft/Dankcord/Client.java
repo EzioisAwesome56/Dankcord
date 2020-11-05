@@ -1,8 +1,10 @@
 package com.eziosoft.Dankcord;
 
 import com.google.gson.Gson;
+import sun.misc.BASE64Decoder;
 
 import javax.crypto.Cipher;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -56,7 +58,7 @@ public class Client {
                     }
                     // try sending the message to the client
                     try{
-                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("USER".getBytes())));
+                        out.write(Base64.getEncoder().encode(encrypt.doFinal("USER".getBytes())));
                     } catch (Exception e){
                         System.out.println("Error while trying to encrypt message to client!");
                         e.printStackTrace();
@@ -66,7 +68,7 @@ public class Client {
                     if (!Database.checkForUser(name)){
                         // account does not exist, disconnect client
                         try {
-                            out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("FAIL".getBytes())));
+                            out.write(Base64.getEncoder().encode(encrypt.doFinal("FAIL".getBytes())));
                         } catch (Exception e){
                             e.printStackTrace();
                         }
@@ -90,7 +92,7 @@ public class Client {
                     }
                     // ask the client for its authentication token
                     try{
-                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("AUTH".getBytes())));
+                        out.write(Base64.getEncoder().encode(encrypt.doFinal("AUTH".getBytes())));
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -106,7 +108,11 @@ public class Client {
                     // compare the auth token with the one in the database
                     if (!shit.equals(block.getToken())){
                         // token invalid! disconnect client
-                        out.writeUTF("FAIL");
+                        try {
+                            out.write(Base64.getEncoder().encode(encrypt.doFinal("FAIL".getBytes())));
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
                         s.close();
                         out.close();
                         in.close();
@@ -115,7 +121,7 @@ public class Client {
                     }
                     // if we are here, it means the client checks out as legitimate
                     try{
-                        out.writeUTF(Base64.getEncoder().encodeToString(encrypt.doFinal("OK".getBytes())));
+                        out.write(Base64.getEncoder().encode(encrypt.doFinal("OK".getBytes())));
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -158,7 +164,7 @@ public class Client {
     public void send(String content) {
         try {
             // TODO: figure out why encrypting server -> client messages isnt working
-            out.writeUTF(content);
+            out.write(Base64.getEncoder().encode(encrypt.doFinal(content.getBytes())));
         } catch (Exception e){
             e.printStackTrace();
         }
